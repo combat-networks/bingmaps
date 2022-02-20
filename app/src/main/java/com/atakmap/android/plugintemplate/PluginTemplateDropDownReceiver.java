@@ -1,6 +1,8 @@
 
 package com.atakmap.android.plugintemplate;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,44 +10,36 @@ import android.graphics.Bitmap;
 import android.net.http.SslError;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.atakmap.android.ipc.AtakBroadcast;
+import com.atakmap.android.maps.MapActivity;
 import com.atakmap.android.maps.MapItem;
 import com.atakmap.android.maps.Marker;
-import com.atakmap.android.widgets.MapWidget;
-import com.atakmap.comms.NetworkUtils;
 
-import com.atak.plugins.impl.PluginLayoutInflater;
 import com.atakmap.android.maps.MapView;
 import com.atakmap.android.plugintemplate.plugin.R;
 import com.atakmap.android.dropdown.DropDown.OnStateListener;
 import com.atakmap.android.dropdown.DropDownReceiver;
 
+import com.atakmap.android.routes.RouteMapComponent;
 import com.atakmap.coremap.log.Log;
-import com.atakmap.coremap.maps.coords.GeoPoint;
-import com.atakmap.android.plugintemplate.plugin.PluginTemplateLifecycle;
+
 import android.webkit.ConsoleMessage;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Locale;
 
 public class PluginTemplateDropDownReceiver extends DropDownReceiver implements
         OnStateListener {

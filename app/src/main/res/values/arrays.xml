@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="travel_mode" translatable="false">
+        <item>Walking</item>
+        <item>Driving</item>
+        <item>Transit</item>
+    </string-array>
+
+    <string-array name="optimize_mode" translatable="false">
+        <item>distance</item>
+        <item>time </item>
+        <item>timeWithTraffic</item>
+        <item>timeAvoidClosure</item>
+    </string-array>
+</resources>

@@ -6,9 +6,11 @@ import android.content.Intent;
 
 import com.atakmap.android.ipc.AtakBroadcast.DocumentedIntentFilter;
 
+import com.atakmap.android.maps.MapActivity;
 import com.atakmap.android.maps.MapView;
 import com.atakmap.android.dropdown.DropDownMapComponent;
 
+import com.atakmap.android.routes.RouteMapComponent;
 import com.atakmap.app.preferences.ToolsPreferenceFragment;
 import com.atakmap.coremap.log.Log;
 import com.atakmap.android.plugintemplate.plugin.R;
@@ -18,7 +20,11 @@ public class PluginTemplateMapComponent extends DropDownMapComponent {
     private static final String TAG = "PluginTemplateMapComponent";
     private Context pluginContext;
     private PluginTemplateDropDownReceiver ddr;
+    private BingMapsRouter router;
+    private RouteMapComponent rmc;
+
     public static PluginTemplateWidget widget;
+
     public void onCreate(final Context context, Intent intent,
             final MapView view) {
 
@@ -44,6 +50,10 @@ public class PluginTemplateMapComponent extends DropDownMapComponent {
                                 pluginContext)));
 
         widget = new PluginTemplateWidget(view, ddr);
+
+        router = new BingMapsRouter(context);
+        rmc = (RouteMapComponent) ((MapActivity) view.getContext()).getMapComponent(RouteMapComponent.class);
+        rmc.getRoutePlannerManager().registerPlanner("BingMapsPlugin", router);
     }
 
     @Override

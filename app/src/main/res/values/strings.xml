@@ -32,4 +32,10 @@
 
     <string name="set_route_two_points">Display route between two PLI</string>
     <string name="set_route_two_points_summary">Draw a route from "Start" PLI to "Finish" PLI</string>
+
+    <string name="set_travel_mode">Travel Mode</string>
+    <string name="set_travel_mode_summary">The mode of travel for the route</string>
+
+    <string name="set_optimize_mode">Optimize Mode</string>
+    <string name="set_optimize_mode_summary">Specifies what parameters to use to optimize the route</string>
 </resources>

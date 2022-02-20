@@ -36,4 +36,18 @@
         android:title="@string/set_route_two_points"
         android:summary="@string/set_route_two_points_summary"
         android:defaultValue="false" />
+    <com.atakmap.android.gui.PanListPreference
+        android:key="plugin_bingmaps_travel_mode"
+        android:title="@string/set_travel_mode"
+        android:summary="@string/set_travel_mode_summary"
+        android:entryValues="@array/travel_mode"
+        android:entries="@array/travel_mode"
+        android:defaultValue="1" />
+    <com.atakmap.android.gui.PanListPreference
+        android:key="plugin_bingmaps_optimize_mode"
+        android:title="@string/set_optimize_mode"
+        android:summary="@string/set_optimize_mode_summary"
+        android:entryValues="@array/optimize_mode"
+        android:entries="@array/optimize_mode"
+        android:defaultValue="1" />
 </PreferenceScreen>
