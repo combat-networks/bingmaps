@@ -56,7 +56,7 @@ public class BingMapsRoutingTask extends RouteGenerationTask {
         String line = null;
         URL url = null;
         try {
-            url = new URL(String.format(Locale.US, "https://dev.virtualearth.net/REST/V1/Routes/Map/Roads/Routes?wp.0=%f,%f;1;Start&wp.1=%f,%f;7;Finish&travelMode=%s&optmz=%s&ra=RoutePath&key=%s", start.getLatitude(), start.getLongitude(), finish.getLatitude(), finish.getLongitude(), travelMode, optimize, key));
+            url = new URL(String.format(Locale.US, "https://dev.virtualearth.net/REST/V1/Routes/Map/Roads/%s?ra=RoutePath&wp.0=%f,%f;1;Start&wp.1=%f,%f;7;Finish&optmz=%s&key=%s", travelMode, start.getLatitude(), start.getLongitude(), finish.getLatitude(), finish.getLongitude(), optimize, key));
             Log.i(TAG, url.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -133,7 +133,7 @@ public class BingMapsRoutingTask extends RouteGenerationTask {
 
                 id = UUID.randomUUID().toString();
 
-                if ( Math.abs(cpLat - rpLat) < 0.000001 || Math.abs(cpLng - rpLng) < 0.000001) {
+                if ( Math.abs(cpLat - rpLat) < 0.00001 && Math.abs(cpLng - rpLng) < 0.00001) {
                     // this is a cue point
                     instruction = itineraryItems.getJSONObject(cueIndex++).getJSONObject("instruction").getString("text");
                     Log.i(TAG, String.format(Locale.US, "LAT: %f LNG: %f Instruction: %s", cpLat, cpLng, instruction));
