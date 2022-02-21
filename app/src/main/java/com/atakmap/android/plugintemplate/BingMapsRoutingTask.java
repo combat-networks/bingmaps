@@ -56,7 +56,7 @@ public class BingMapsRoutingTask extends RouteGenerationTask {
         String line = null;
         URL url = null;
         try {
-            url = new URL(String.format(Locale.US, "https://dev.virtualearth.net/REST/V1/Routes/Map/Roads/Routes?wp.1=%f,%f;1;Start&wp.2=%f,%f;7;End&travelMode=%s&optmz=%s&key=%s", start.getLatitude(), start.getLongitude(), finish.getLatitude(), finish.getLongitude(), travelMode, optimize, key));
+            url = new URL(String.format(Locale.US, "https://dev.virtualearth.net/REST/V1/Routes/Map/Roads/Routes?wp.0=%f,%f;1;Start&wp.1=%f,%f;7;Finish&travelMode=%s&optmz=%s&ra=RoutePath&key=%s", start.getLatitude(), start.getLongitude(), finish.getLatitude(), finish.getLongitude(), travelMode, optimize, key));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -105,36 +105,51 @@ public class BingMapsRoutingTask extends RouteGenerationTask {
         try {
             JSONArray resources = routeData.getJSONArray("resourceSets").getJSONObject(0).getJSONArray("resources");
             JSONArray itineraryItems = resources.getJSONObject(0).getJSONArray("routeLegs").getJSONObject(0).getJSONArray("itineraryItems");
-            int points = itineraryItems.length();
-            Log.i(TAG, String.format(Locale.US, "Got %d points", points));
+            JSONArray routePathCoords = resources.getJSONObject(0).getJSONObject("routePath").getJSONObject("line").optJSONArray("coordinates");
+            int cuePoints = itineraryItems.length();
+            int cueIndex = 0;
+            int pathPoints = routePathCoords.length();
+            //Log.i(TAG, String.format(Locale.US, "Got %d cue points", cuePoints));
+            //Log.i(TAG, String.format(Locale.US, "Got %d path points", pathPoints));
             List<PointMapItem> wayPoints = new LinkedList<PointMapItem>();
             Map<String, NavigationCue> wayCues = new HashMap<>();
-            double lat, lng;
+            double cpLat, cpLng, rpLat, rpLng;
             GeoPoint gp;
             BingMapsPointMapItem pmi;
             String id, instruction;
             NavigationCue navCue;
+            JSONObject maneuverPoint;
 
-            for (int i = 0; i < points; i++) {
-                JSONObject maneuverPoint = itineraryItems.getJSONObject(i).getJSONObject("maneuverPoint");
-                lat = (double) maneuverPoint.getJSONArray("coordinates").get(0);
-                lng = (double) maneuverPoint.getJSONArray("coordinates").get(1);
-                instruction = itineraryItems.getJSONObject(i).getJSONObject("instruction").getString("text");
-                Log.i(TAG, String.format(Locale.US, "LAT: %f LNG: %f Instruction: %s", lat, lng, instruction));
+            for (int i = 0; i < pathPoints; i++) {
+                maneuverPoint = itineraryItems.getJSONObject(cueIndex).getJSONObject("maneuverPoint");
+                cpLat = (double) maneuverPoint.getJSONArray("coordinates").get(0);
+                cpLng = (double) maneuverPoint.getJSONArray("coordinates").get(1);
+
+                rpLat = (double) routePathCoords.getJSONArray(i).get(0);
+                rpLng = (double) routePathCoords.getJSONArray(i).get(1);
+
+                //Log.i(TAG, String.format(Locale.US, "RPLAT: %f RPLNG: %f - CPLAT: %f CPLNG: %f", rpLat, rpLng, cpLat, cpLng));
+
                 id = UUID.randomUUID().toString();
-                gp = new GeoPoint(lat, lng, 0);
-                pmi = new BingMapsPointMapItem(gp, id);
-                pmi.setMetaString("type", "b-m-p-w");
-                if (i==0)
-                    pmi.setMetaString("title", "Start");
-                else if (i==points)
-                    pmi.setMetaString("title", "Finish");
-                else
-                    pmi.setMetaString("title", String.format(Locale.US, "CP%d", i));
+
+                if (cpLat == rpLat || cpLng == rpLng) {
+                    // this is a cue point
+                    instruction = itineraryItems.getJSONObject(cueIndex).getJSONObject("instruction").getString("text");
+                    //Log.i(TAG, String.format(Locale.US, "LAT: %f LNG: %f Instruction: %s", cpLat, cpLng, instruction));
+                    gp = new GeoPoint(cpLat, cpLng, 0);
+                    pmi = new BingMapsPointMapItem(gp, id);
+                    pmi.setMetaString("type", "b-m-p-w");
+                    navCue = new NavigationCue(UUID.randomUUID().toString(), instruction, instruction);
+                    navCue.addCue(NavigationCue.TriggerMode.DISTANCE, 50);
+                    wayCues.put(id, navCue);
+                } else {
+                    // this is a route point
+                    gp = new GeoPoint(rpLat, rpLng, 0);
+                    pmi = new BingMapsPointMapItem(gp, id);
+                    pmi.setMetaString("type", "b-m-p-c");
+                }
+                pmi.setMetaString("title", String.format(Locale.US, "CP%d", cueIndex++));
                 wayPoints.add(pmi);
-                navCue = new NavigationCue(UUID.randomUUID().toString(), instruction, instruction);
-                navCue.addCue(NavigationCue.TriggerMode.DISTANCE, 25);
-                wayCues.put(id, navCue);
             }
 
             Log.i(TAG, String.format(Locale.US, "Created route package with %d waypoints and %d cues", wayPoints.size(), wayCues.size()));
